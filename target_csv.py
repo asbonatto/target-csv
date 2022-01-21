@@ -39,7 +39,7 @@ def flatten(d, parent_key='', sep='__'):
     return dict(items)
 
 
-def persist_messages(delimiter, quotechar, messages, destination_path, fixed_headers, validate):
+def persist_messages(delimiter, quotechar, messages, destination_path, fixed_headers, validate, newline):
     state = None
     schemas = {}
     key_properties = {}
@@ -83,7 +83,7 @@ def persist_messages(delimiter, quotechar, messages, destination_path, fixed_hea
                 else:
                     headers[o['stream']] = flattened_record.keys()
 
-            with open(filename, 'a') as csvfile:
+            with open(filename, 'a', newline=newline) as csvfile:
                 writer = csv.DictWriter(csvfile,
                                         headers[o['stream']],
                                         extrasaction='ignore',
@@ -154,7 +154,8 @@ def main():
                              input_messages,
                              config.get('destination_path', ''),
                              config.get('fixed_headers'),
-                             config.get('validate', True))
+                             config.get('validate', True),
+                             config.get('newline'))
 
     emit_state(state)
     logger.debug("Exiting normally")
